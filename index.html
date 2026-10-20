@@ -1,0 +1,732 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#13293D">
+<title>5팀의 사활</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://script.google.com">
+<link rel="preconnect" href="https://script.googleusercontent.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<style>
+:root{
+  --tile:#E8F1F5; --card:#FFFFFF; --ink:#13293D; --sub:#5B7083; --line:#D3E1E8;
+  --pool:#1683A8; --pool-soft:#D6EEF6; --track:#C8492B; --track-soft:#F7E0D8;
+  --rope:#F2BE1A; --ok:#1E8A55; --ok-soft:#DDF2E6; --bad:#C23B3B; --bad-soft:#F8DEDE;
+  --trail:#4F7A2E; --bung:#E08A00; --rev:#2E9B5F; --team:#3B5BDB; --jung:#D6336C;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --tile:#0D1B26; --card:#15283A; --ink:#E4EEF4; --sub:#93A9BA; --line:#24394C;
+    --pool:#3DB3DA; --pool-soft:#173A4D; --track:#EA7356; --track-soft:#3D2620;
+    --ok:#47C485; --ok-soft:#16382A; --bad:#EE6B6B; --bad-soft:#3D1F22;
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--tile);color:var(--ink);
+  font-family:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:16px;line-height:1.45}
+button,input{font:inherit;color:inherit}
+.num{font-variant-numeric:tabular-nums}
+.app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;padding-bottom:84px}
+
+/* header: lane rope */
+header{position:sticky;top:0;z-index:5;background:#13293D;color:#fff;padding:14px 18px 12px}
+header h1{margin:0;font-size:19px;font-weight:700;letter-spacing:-.4px}
+header p{margin:2px 0 0;font-size:13px;color:#A9C2D3}
+.rope{height:6px;background:repeating-linear-gradient(90deg,var(--rope) 0 14px,#E8E8E8 14px 22px,var(--pool) 22px 36px,#E8E8E8 36px 44px)}
+
+main{padding:16px}
+.view{display:none}.view.on{display:block}
+.sec{background:var(--card);border-radius:16px;padding:16px;margin-bottom:12px;border:1px solid var(--line)}
+.sec h2{margin:0 0 12px;font-size:15px;font-weight:600;color:var(--sub)}
+
+/* segmented pickers */
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.pill{flex:1 1 auto;min-width:0;border:1.5px solid var(--line);background:var(--card);border-radius:12px;padding:11px 8px;font-weight:600;font-size:15px;cursor:pointer;text-align:center}
+.pill.on{background:var(--ink);border-color:var(--ink);color:var(--card)}
+.namesel{width:100%;font-size:18px;font-weight:600;padding:13px 44px 13px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);-webkit-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%235B7083' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center}
+.namesel.on{border-color:var(--pool);border-width:2px}
+.seghint{font-size:13px;color:var(--sub);margin:-4px 0 10px}
+.segwrap{margin-bottom:2px}
+.segwrap + .segwrap{border-top:1px dashed var(--line);padding-top:5px}
+.seg-h{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--sub);font-weight:600;margin:0 0 3px}
+.seg-x{border:0;background:none;color:var(--bad);font-size:13px;cursor:pointer;padding:4px}
+.addseg{border:1.5px dashed var(--line);background:none;border-radius:10px;padding:5px 10px;font-size:13px;color:var(--sub);cursor:pointer;margin:0 0 0 auto;font-weight:500}
+.datepick{position:relative;flex:0 0 52px}
+.datepick input{position:absolute;inset:0;opacity:0;width:100%}
+
+/* sport blocks */
+.sport{border-left:5px solid var(--pool);padding-left:12px;margin-bottom:12px}
+.sport.run{border-color:var(--track)}
+.sport.trail{border-color:var(--trail);margin-bottom:0}
+.sport h3 small{font-size:13px;font-weight:400;color:var(--sub)}
+.sport h3{margin:0 0 6px;font-size:16px;display:flex;align-items:center;gap:6px}
+.row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.row label{width:64px;white-space:nowrap;font-size:14px;color:var(--sub);flex:none}
+.box{display:flex;align-items:center;gap:4px}
+.box input{width:100%;min-width:0;border:1.5px solid var(--line);border-radius:10px;padding:7px 10px;font-size:18px;font-weight:600;text-align:right;background:var(--tile)}
+.box input:focus{outline:none;border-color:var(--ink);background:var(--card)}
+.box span{font-size:14px;color:var(--sub);flex:none}
+.w-dist{flex:1}.w-sm{width:70px}
+.judge{font-size:13px;border-radius:8px;padding:5px 10px;display:none}
+.judge.ok{display:block;background:var(--ok-soft);color:var(--ok)}
+.judge.bad{display:block;background:var(--bad-soft);color:var(--bad);font-weight:600}
+
+/* bonus toggles */
+.bonus{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tog{position:relative;border:2px dashed var(--line);background:transparent;border-radius:14px;padding:14px 10px;text-align:left;cursor:pointer;color:var(--sub);transition:transform .08s}
+.tog:active{transform:scale(.97)}
+.tog b{display:block;font-size:16px}
+.tog small{font-size:13px}
+.tog .ck{position:absolute;top:10px;right:10px;width:24px;height:24px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:14px;color:transparent}
+.tog.on{border-style:solid;color:#fff;box-shadow:0 4px 14px -6px var(--c)}
+.tog.on{background:var(--c);border-color:var(--c)}
+.tog.on .ck{background:#fff;border-color:#fff;color:var(--c);font-weight:700}
+.picked{margin-top:12px;font-size:14px;color:var(--sub);min-height:20px}
+.picked b{color:var(--ink)}
+
+.save{position:sticky;bottom:84px;margin-top:4px;background:var(--tile);padding-top:6px;border-radius:14px 14px 0 0}
+.btn{width:100%;border:0;border-radius:14px;padding:16px;font-size:17px;font-weight:700;background:var(--pool);color:#fff;cursor:pointer}
+.btn:disabled{background:var(--line);color:var(--sub)}
+.preview{font-size:14px;text-align:center;color:var(--sub);margin-bottom:8px}
+.preview b{color:var(--ink)}
+
+/* scoreboard */
+.board{background:#13293D;color:#fff;border-radius:18px;padding:18px;margin-bottom:12px;overflow:hidden;position:relative}
+.board .lbl{font-size:13px;color:#A9C2D3}
+.board .big{font-size:52px;font-weight:700;letter-spacing:-2px;line-height:1.05;margin:2px 0 10px}
+.board .split{display:flex;gap:18px;font-size:14px;color:#D5E3EC}
+.board .split b{color:#fff;font-size:17px;display:block}
+.lane{margin-top:16px}
+.lane .bar{height:12px;border-radius:6px;background:repeating-linear-gradient(90deg,#2C4559 0 10px,#24394C 10px 14px);overflow:hidden}
+.lane .bar i{display:block;height:100%;background:repeating-linear-gradient(90deg,var(--rope) 0 10px,#fff 10px 14px)}
+.lane .cap{display:flex;justify-content:space-between;font-size:12px;color:#A9C2D3;margin-top:6px}
+.copy{margin-top:14px;width:100%;border:1px solid #3B566C;background:transparent;color:#fff;border-radius:12px;padding:11px;font-size:14px;cursor:pointer}
+
+.rank{list-style:none;margin:0;padding:0}
+.rank li{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:8px;overflow:hidden}
+.rank .top{display:flex;align-items:center;gap:12px;padding:14px;cursor:pointer;width:100%;background:none;border:0;text-align:left}
+.pos{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:700;background:var(--tile);flex:none}
+.rank li:first-child .pos{background:var(--rope);color:var(--ink)}
+.who{flex:1;min-width:0}
+.who b{font-size:16px}
+.who small{display:block;color:var(--sub);font-size:13px}
+.tot{font-size:22px;font-weight:700}
+.detail{display:none;padding:0 14px 14px;font-size:14px}
+.rank li.open .detail{display:block}
+.detail table{width:100%;border-collapse:collapse}
+.detail td{padding:5px 0;border-bottom:1px dashed var(--line)}
+.detail td:last-child{text-align:right;font-weight:600}
+.warn{color:var(--bad);font-weight:600}
+.chip{display:inline-block;font-size:12px;border-radius:6px;padding:1px 7px;margin-right:4px;font-weight:600}
+.chip.s{background:var(--pool-soft);color:var(--pool)}.chip.r{background:var(--track-soft);color:var(--track)}
+
+/* records */
+.dayhead{display:flex;justify-content:space-between;align-items:baseline;margin:18px 4px 4px}
+.dayhead .d{font-size:14px;color:var(--sub);font-weight:600}
+.dayhead .tot{font-size:15px;font-weight:700;color:var(--ink)}
+.dayhead .tot small{font-size:12px;font-weight:500;color:var(--sub);margin-left:4px}
+.cols{display:grid;grid-template-columns:1fr 72px 56px;gap:6px;font-size:11px;color:var(--sub);padding:0 14px 4px;text-align:right}
+.rec2{display:grid;grid-template-columns:1fr 72px 56px;gap:6px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:6px;font-size:15px}
+.rec2.pend{opacity:.6}
+.rec2 small{display:block;color:var(--sub);font-size:13px;word-break:keep-all}
+.rec2 .tag{display:inline-block;font-size:12px;font-weight:700;border-radius:6px;padding:1px 6px;margin-left:4px;background:var(--bad-soft);color:var(--bad)}
+.rec2 .mil,.rec2 .bon{text-align:right;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rec2 .mil{font-size:16px}
+.rec2 .bon{font-size:15px;color:var(--ok)}
+.rec2 .bon.zero{color:var(--sub);font-weight:500}
+.rec2 .acts{margin-top:8px;display:flex;gap:6px}
+.rec2 .acts .edit,.rec2 .acts .del{margin-left:0;padding:6px 12px;font-size:13px}
+.rec{display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:6px;font-size:15px}
+.rec small{display:block;color:var(--sub);font-size:13px}
+.del,.edit{border:1px solid var(--line);background:var(--card);border-radius:10px;font-size:14px;padding:9px 12px;cursor:pointer;white-space:nowrap;flex:none;margin-left:6px}
+.del{color:var(--bad)} .edit{color:var(--pool)}
+.rec.pend{opacity:.6}
+.modal{position:fixed;inset:0;z-index:20;background:rgba(10,20,30,.55);display:flex;align-items:flex-end;justify-content:center;padding:16px}
+.modal[hidden]{display:none}
+.modal .mbox{background:var(--card);color:var(--ink);border-radius:18px;padding:20px;width:100%;max-width:440px;margin-bottom:env(safe-area-inset-bottom)}
+.modal p{margin:0 0 16px;white-space:pre-line;font-size:16px}
+.modal textarea{width:100%;min-height:90px;border:1.5px solid var(--line);border-radius:10px;padding:10px;font:inherit;margin-bottom:12px;background:var(--tile);color:var(--ink)}
+.mbtns{display:flex;gap:8px}.mbtns button{flex:1;border:0;border-radius:12px;padding:14px;font-size:16px;font-weight:700;cursor:pointer}
+#mNo{background:var(--tile);color:var(--ink)} #mOk{background:var(--pool);color:#fff} #mOk.danger{background:var(--bad)}
+.editbar{display:none;align-items:center;justify-content:space-between;gap:8px;background:var(--pool-soft);color:var(--pool);border:1.5px solid var(--pool);border-radius:14px;padding:12px 14px;margin-bottom:12px;font-weight:600}
+.editbar.on{display:flex}
+.editbar button{border:0;background:var(--card);color:var(--ink);border-radius:10px;padding:8px 12px;font-weight:600;cursor:pointer}
+.rec small{word-break:keep-all}
+
+/* tab bar */
+nav{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav .in{max-width:480px;margin:0 auto;display:flex}
+nav button{flex:1;border:0;background:none;padding:10px 0 12px;font-size:12px;color:var(--sub);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button svg{width:24px;height:24px}
+nav button.on{color:var(--ink);font-weight:700}
+.toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+:focus-visible{outline:3px solid var(--rope);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.chip.t{background:#E3EEDA;color:var(--trail)}
+header .hrow{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.icon-btn{border:1px solid #3B566C;background:transparent;color:#fff;border-radius:10px;padding:6px 10px;font-size:13px;cursor:pointer;white-space:nowrap}
+.demo{background:#FFF3CD;color:#7A5B00;font-size:13px;padding:8px 16px}
+.login{max-width:360px;margin:40px auto;text-align:center}
+.login input{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:14px;font-size:18px;text-align:center;background:var(--card);margin:14px 0}
+.err{color:var(--bad);font-size:14px;min-height:20px}
+.loading{text-align:center;color:var(--sub);padding:40px 0}
+.rec .tag{display:inline-block;font-size:12px;font-weight:700;border-radius:6px;padding:1px 6px;margin-left:4px}
+.rec .tag.bad{background:var(--bad-soft);color:var(--bad)}
+.rec .pt{font-weight:700;font-size:16px;white-space:nowrap;margin-left:8px}
+.rec .rt{display:flex;align-items:center}
+.memo{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px;background:var(--tile);font-size:15px}
+.btn.busy{opacity:.6;pointer-events:none}
+.empty{text-align:center;color:var(--sub);padding:30px 0}
+.rank .me .pos{outline:2px solid var(--pool)}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="hrow">
+      <div><h1>5팀의 사활</h1><p id="sub">수영in부산 챌린지</p></div>
+      <button class="icon-btn" id="refresh" aria-label="새로고침">새로고침</button>
+    </div>
+  </header>
+  <div class="rope" aria-hidden="true"></div>
+  <div class="demo" id="demo" hidden>체험 모드: 이 기기 안에서만 저장돼요. API 주소를 넣으면 구글 시트와 연결됩니다.</div>
+
+  <main>
+    <section class="view" id="v-in">
+      <div class="editbar" id="editbar"><span id="editTxt"></span><button id="editCancel">수정 취소</button></div>
+      <div class="sec">
+        <h2>날짜</h2>
+        <div class="seg" id="dates"></div>
+      </div>
+      <div class="sec">
+        <h2>누구 기록인가요?</h2>
+        <select class="namesel" id="names" aria-label="팀원 선택"></select>
+      </div>
+      <div class="sec">
+        <div class="seghint">시계를 껐다가 10분 안에 다시 켰다면 '구간 추가'로 나눠 넣으세요. 합쳐서 한 번의 운동으로 계산해요 (규정 11).</div>
+        <div class="sport">
+          <h3>🏊 수영 <button class="addseg" data-k="swim">+ 구간 추가</button></h3>
+          <div id="swimSegs"></div>
+          <div class="judge" id="sj"></div>
+        </div>
+        <div class="sport run">
+          <h3>🏃 러닝 <button class="addseg" data-k="run">+ 구간 추가</button></h3>
+          <div id="runSegs"></div>
+          <div class="judge" id="rj"></div>
+        </div>
+        <div class="sport trail">
+          <h3>⛰️ 트레일러닝 <small>8km 이상 +10 (1회)</small></h3>
+          <div class="row"><label>거리</label><div class="box w-dist"><input id="tk" inputmode="decimal" placeholder="0.00"><span>km</span></div></div>
+          <div class="row"><label>시간</label>
+            <div class="box w-sm"><input id="tt1" inputmode="numeric" placeholder="1"><span>시간</span></div>
+            <div class="box w-sm"><input id="tt2" inputmode="numeric" placeholder="30"><span>분</span></div></div>
+          <div class="row"><label>상승고도</label><div class="box w-dist"><input id="te" inputmode="numeric" placeholder="0"><span>m</span></div></div>
+          <div class="judge" id="tj"></div>
+        </div>
+      </div>
+      <div class="sec">
+        <h2>보너스</h2>
+        <div class="bonus" id="bonus"></div>
+        <div class="picked" id="picked">선택한 보너스 없음</div>
+      </div>
+      <div class="sec">
+        <h2>메모 (선택)</h2>
+        <input class="memo" id="memo" placeholder="예: 단톡 표기 다름">
+      </div>
+      <div class="save">
+        <div class="preview" id="pv"></div>
+        <button class="btn" id="saveBtn" disabled>이름을 고르세요</button>
+      </div>
+    </section>
+
+    <section class="view" id="v-score">
+      <div class="board">
+        <div class="lbl">팀 총점 · <span id="asof"></span> 기준</div>
+        <div class="big num" id="tTotal"></div>
+        <div class="split">
+          <div>기본<b class="num" id="tBase"></b></div>
+          <div>보너스<b class="num" id="tBonus"></b></div>
+          <div>그날 기록<b class="num" id="tDay"></b></div>
+        </div>
+        <div class="lane">
+          <div class="bar"><i id="tBar"></i></div>
+          <div class="cap"><span>기본 마일리지</span><span class="num" id="tCap"></span></div>
+        </div>
+        <button class="copy" id="copyBtn">단톡방용 요약 복사</button>
+      </div>
+      <ul class="rank" id="rank"></ul>
+    </section>
+
+    <section class="view" id="v-log"><div id="log"></div></section>
+  </main>
+</div>
+
+<nav id="nav" hidden><div class="in">
+  <button data-v="in" id="tabIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>입력</button>
+  <button data-v="score"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>점수</button>
+  <button data-v="log"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>기록</button>
+</div></nav>
+<div class="toast" id="toast"></div>
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true"><div class="mbox"><p id="mMsg"></p><textarea id="mTxt" hidden readonly></textarea><div class="mbtns"><button id="mNo">취소</button><button id="mOk">확인</button></div></div></div>
+
+<script>
+/* ===== 설정: 구글 Apps Script 웹앱 주소 (비우면 체험 모드) ===== */
+const API_URL = "https://script.google.com/macros/s/AKfycbwj3ssRddxY6RwE19ldLykirswYV5ycepG2Dj5cLgfPR4YrnG8RQH5W_2UxBqOBP6H6/exec";
+/* ============================================================== */
+
+const DEMO = !API_URL;
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2, "0");
+const ymd = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const TODAY = ymd(new Date());
+const MON = { Jan:1, Feb:2, Mar:3, Apr:4, May:5, Jun:6, Jul:7, Aug:8, Sep:9, Oct:10, Nov:11, Dec:12 };
+function normDate(s){
+  s = String(s || "");
+  if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0, 10);
+  const m = /([A-Z][a-z]{2}) (\d{1,2}) (\d{4})/.exec(s);        // "Wed Oct 14 2026 ..." 형태
+  if (m && MON[m[1]]) return `${m[3]}-${pad(MON[m[1]])}-${pad(m[2])}`;
+  return s;
+}
+const md = s => { s = normDate(s); return /^\d{4}-\d{2}-\d{2}$/.test(s) ? `${+s.slice(5,7)}/${+s.slice(8,10)}` : ""; };
+const DOW = "일월화수목금토";
+const addD = (s, k) => { const d = new Date(s + "T00:00"); d.setDate(d.getDate() + k); return ymd(d); };
+const dow = s => DOW[new Date(s + "T00:00").getDay()];
+const r2 = x => Math.round(x * 100) / 100;
+const paceTxt = m => { const a = Math.floor(m), s = Math.round((m - a) * 60); return `${a}:${pad(s === 60 ? 0 : s)}`; };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+const store = {
+  get(k){ try { return localStorage.getItem(k) || ""; } catch(e){ return this.m[k] || ""; } },
+  set(k, v){ try { localStorage.setItem(k, v); } catch(e){ this.m[k] = v; } }, m:{}
+};
+const BON = {
+  bung:{ t:"⚡ 번개", p:3, s:"매일 가능", c:"var(--bung)" },
+  rev:{ t:"📝 후기", p:2, s:"매일 가능", c:"var(--rev)" },
+  jung:{ t:"🔥 정모 참석", p:10, s:"1회", c:"var(--jung)" },
+  team:{ t:"🤝 팀번개", p:2, s:"1회", c:"var(--team)" }
+};
+
+let DATA = null, CODE = "open";
+let LAST = 0, BUSY = 0;
+/* 확인 창: 카카오톡 등 앱 안 브라우저에서 confirm()/alert()가 막히는 경우가 있어 직접 만든 창 사용 */
+function ask(msg, { ok = "확인", cancel = "취소", danger = false, text = "" } = {}){
+  return new Promise(res => {
+    $("mMsg").textContent = msg; $("mOk").textContent = ok; $("mOk").classList.toggle("danger", danger);
+    $("mNo").hidden = !cancel; $("mNo").textContent = cancel || "";
+    $("mTxt").hidden = !text; $("mTxt").value = text;
+    $("modal").hidden = false; if (text) setTimeout(() => $("mTxt").select(), 50);
+    const done = v => { $("modal").hidden = true; $("mOk").onclick = $("mNo").onclick = null; res(v); };
+    $("mOk").onclick = () => done(true); $("mNo").onclick = () => done(false);
+  });
+}
+const notify = msg => ask(msg, { cancel: "" });
+/* 아직 서버에서 처리 중인 작업. 서버 응답이 순서가 바뀌어 와도 화면이 되돌아가지 않게 함 */
+const PEND = { add: [], del: new Set(), upd: new Map() };
+let QUEUE = Promise.resolve();
+const enqueue = fn => (QUEUE = QUEUE.then(fn, fn));
+function reconcile(d){
+  d.records = d.records.filter(r => !PEND.del.has(r.row))
+    .map(r => PEND.upd.has(r.row) ? Object.assign({}, r, PEND.upd.get(r.row), { pending: true }) : r)
+    .concat(PEND.add);
+  return d;
+}
+let RAW = null;   // 서버에서 마지막으로 받은 그대로의 데이터
+const view = () => reconcile(JSON.parse(JSON.stringify(RAW)));
+function setData(d){
+  RAW = d; LAST = Date.now();
+  try { store.set("data5", JSON.stringify(d)); } catch(e){}
+  DATA = view();
+}
+function busy(k){ BUSY = Math.max(0, BUSY + k); $("refresh").textContent = BUSY ? "동기화 중…" : "새로고침"; }
+function toast(t){ const e = $("toast"); e.textContent = t; e.classList.add("on"); setTimeout(() => e.classList.remove("on"), 1800); }
+
+/* ---------- 서버 통신 ---------- */
+async function api(method, body){
+  if (DEMO) return demoApi(method, body);
+  let res;
+  try {
+    res = method === "GET"
+      ? await fetch(`${API_URL}?code=${encodeURIComponent(CODE)}&t=${Date.now()}`)
+      : await fetch(API_URL, { method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body: JSON.stringify(Object.assign({ code: CODE }, body)) });
+  } catch(e){ throw new Error("인터넷 연결을 확인하세요"); }
+  const txt = await res.text();
+  let j; try { j = JSON.parse(txt); } catch(e){ throw new Error(`서버 응답 오류 (HTTP ${res.status})`); }
+  if (j.ok) {
+    ["start","end","jungmo"].forEach(k => j.settings[k] = normDate(j.settings[k]));
+    j.team.asof = normDate(j.team.asof);
+    j.records.forEach(r => r.date = normDate(r.date));
+  }
+  if (!j.ok) { const err = new Error(j.error === "code" ? "구글 스크립트가 아직 예전 버전이에요. Apps Script를 새 버전으로 배포해 주세요" : j.error); err.code = j.error; throw err; }
+  return j;
+}
+
+/* ---------- 체험 모드: 시트 수식과 같은 규칙으로 계산 ---------- */
+function demoApi(method, body){
+  const S = { start:"2026-10-14", end:"2026-10-28", jungmo:"2026-10-24", members:["유성재","정효직","이유리","신지안","김상진","윤전한"], swimPace:3, runPace:9, trailPace:12, trailElev:400 };
+  let recs = JSON.parse(store.get("demo5") || "null") || [
+    { date:"2026-10-14", name:"이유리", rk:6.81, bung:true, rev:true },
+    { date:"2026-10-14", name:"유성재", sm:2000 },
+    { date:"2026-10-14", name:"신지안", sm:1802, rk:10.05, bung:true, rev:true },
+    { date:"2026-10-14", name:"윤전한", sm:1772, rk:10.02, bung:true, rev:true },
+    { date:"2026-10-14", name:"김상진", sm:7087, bung:true, rev:true },
+    { date:"2026-10-14", name:"정효직", sm:2000, rk:11.04, bung:true, rev:true }
+  ].map((r, i) => Object.assign({ row:i+4 }, r));
+  if (method === "POST" && body.action === "add") recs.push(Object.assign({ row: Math.max(3, ...recs.map(r => r.row)) + 1 }, body.record));
+  if (method === "POST" && body.action === "delete") recs = recs.filter(r => r.row !== body.row);
+  if (method === "POST" && body.action === "update") recs = recs.map(r => r.row === body.row ? Object.assign({ row: r.row }, body.record) : r);
+  store.set("demo5", JSON.stringify(recs));
+  const R = recs.map(r => {
+    const ok = r.date >= S.start && r.date <= S.end;
+    const sp = ok && !((r.spSec||0) > S.swimPace*60) ? (r.sm||0)/250 : 0;
+    const rp = ok && !((r.rMin||0) > S.runPace*(r.rk||0)) ? (r.rk||0) : 0;
+    const tp = ok && (r.elev||0) >= S.trailElev && !((r.tMin||0) > S.trailPace*(r.tk||0)) ? (r.tk||0) : 0;
+    const judge = [ (r.sm && !sp && ok) ? "수영 페이스 초과" : "", (r.rk && !rp && ok) ? "러닝 페이스 초과" : "", (r.tk && !tp && ok) ? "트레일 불인정" : "" ].filter(Boolean).join(" ");
+    return Object.assign({}, r, { status: ok ? "정상" : "기간 외", swimPts:sp, runPts:rp, trailPts:tp, pts: r2(sp+rp+tp), judge: ok ? judge : "기간 외" });
+  });
+  const last = R.reduce((a, r) => r.date > a ? r.date : a, "");
+  const days = []; for (let d = S.start; d <= S.end && d <= last; d = addD(d, 1)) days.push(d);
+  const RUN = [[10,3],[15,5],[20,8],[25,10]], SWIM = [[1500,3],[2500,5],[3000,8],[4000,10]];
+  const members = S.members.map(n => {
+    const rs = R.filter(r => r.name === n && r.status === "정상").sort((a, b) => (a.date + pad(a.row)).localeCompare(b.date + pad(b.row)));
+    let rst = 0, sst = 0; const daily = {};
+    rs.forEach(r => { daily[r.date] = (daily[r.date] || 0) + r.pts;
+      if (r.runPts > 0 && rst < 4 && r.rk >= RUN[rst][0]) rst++;
+      if (r.swimPts > 0 && sst < 4 && r.sm >= SWIM[sst][0]) sst++; });
+    const cnt = k => new Set(rs.filter(r => r[k]).map(r => r.date)).size;
+    const m = { name:n, swim: rs.reduce((a,r)=>a+r.swimPts,0), run: r2(rs.reduce((a,r)=>a+r.runPts,0)), trail: r2(rs.reduce((a,r)=>a+r.trailPts,0)),
+      rest: days.filter(d => !daily[d]).length, runStage:rst, runBP: rst ? RUN[rst-1][1] : 0, swimStage:sst, swimBP: sst ? SWIM[sst-1][1] : 0,
+      bung: cnt("bung")*3, rev: cnt("rev")*2, jung: cnt("jung") ? 10 : 0, team: cnt("team") ? 2 : 0, trailBP: rs.some(r => r.trailPts > 0 && r.tk >= 8) ? 10 : 0 };
+    m.base = r2(m.swim + m.run + m.trail);
+    m.deduct = (last >= S.end && m.rest < 2) ? Math.max(0, ...Object.values(daily)) : 0;
+    m.baseFinal = r2(m.base - m.deduct);
+    m.bonus = m.runBP + m.swimBP + m.bung + m.rev + m.jung + m.team + m.trailBP;
+    m.total = r2(m.baseFinal + m.bonus);
+    return m;
+  });
+  const cap = 150 * S.members.length, baseSum = r2(members.reduce((a,m)=>a+m.baseFinal,0)), bonus = members.reduce((a,m)=>a+m.bonus,0);
+  const total = r2(Math.min(baseSum, cap) + bonus);
+  const top = [...members].sort((a,b)=>b.total-a.total)[0];
+  return Promise.resolve({ ok:true, role:"admin", settings:S, members, records:R,
+    team:{ asof:last, baseSum, cap, base:Math.min(baseSum,cap), bonus, total,
+      summary: `${md(last)} 기준 5팀의 사활 ${total}점 (기본 ${Math.min(baseSum,cap)} + 보너스 ${bonus}), 1위 ${top.name} ${top.total}점` } });
+}
+
+/* ---------- 화면 전환 ---------- */
+let VIEW = "";
+function show(v){
+  VIEW = v;
+  document.querySelectorAll(".view").forEach(s => s.classList.toggle("on", s.id === "v-" + v));
+  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.v === v));
+  $("nav").hidden = false;
+  if (v === "score") renderScore();
+  if (v === "log") renderLog();
+  if (v === "in") { renderDates(); renderNames(); renderBonus(); renderSegs("swim"); renderSegs("run"); update(); }
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll("nav button").forEach(b => b.onclick = () => { show(b.dataset.v); if (b.dataset.v !== "in" && Date.now() - LAST > 30000) refresh(true); });
+$("refresh").onclick = () => refresh(false);
+
+async function refresh(quiet){
+  busy(1);
+  try { setData(await api("GET")); afterLoad(); if (!quiet) toast("최신 점수를 불러왔어요"); }
+  catch(e){ if (e.code === "code") { logout(e.message); } else toast(e.message); }
+  finally { busy(-1); }
+}
+function afterLoad(){
+  const admin = DATA.role === "admin";
+  $("tabIn").hidden = !admin;
+  $("sub").textContent = `수영in부산 챌린지 · ${md(DATA.settings.start)} ~ ${md(DATA.settings.end)}`;
+  if (VIEW === "score") renderScore();
+  if (VIEW === "log") renderLog();
+  if (VIEW === "in") renderNames();
+}
+function logout(msg){ toast(msg || "서버 연결 오류"); }
+
+/* ---------- 입력 ---------- */
+const newSeg = () => ({ d:"", a:"", b:"" });
+const st = { date: TODAY, name:"", b:new Set(), seg:{ swim:[newSeg()], run:[newSeg()] }, edit: null };
+const FIELDS = ["tk","tt1","tt2","te"];
+const SEGDEF = {
+  swim:{ t:"수영", dU:"m", dMode:"numeric", dPh:"0", a:["분","2"], b:["초","40"], lab:"페이스", tail:"/100m" },
+  run:{ t:"러닝", dU:"km", dMode:"decimal", dPh:"0.00", a:["시간","1"], b:["분","05"], lab:"시간", tail:"" }
+};
+function renderSegs(k){
+  const D = SEGDEF[k], list = st.seg[k], many = list.length > 1;
+  $(k + "Segs").innerHTML = list.map((s, i) => `<div class="segwrap">
+    ${many ? `<div class="seg-h"><span>${D.t} ${i+1}</span><button class="seg-x" data-k="${k}" data-i="${i}">구간 삭제</button></div>` : ""}
+    <div class="row"><label>거리</label><div class="box w-dist"><input autocomplete="off" data-k="${k}" data-i="${i}" data-f="d" inputmode="${D.dMode}" placeholder="${D.dPh}" value="${esc(s.d)}"><span>${D.dU}</span></div></div>
+    <div class="row"><label>${D.lab}</label>
+      <div class="box w-sm"><input autocomplete="off" data-k="${k}" data-i="${i}" data-f="a" inputmode="numeric" placeholder="${D.a[1]}" value="${esc(s.a)}"><span>${D.a[0]}</span></div>
+      <div class="box w-sm"><input autocomplete="off" data-k="${k}" data-i="${i}" data-f="b" inputmode="numeric" placeholder="${D.b[1]}" value="${esc(s.b)}"><span>${D.b[0]}</span></div>
+      ${D.tail ? `<span style="font-size:14px;color:var(--sub)">${D.tail}</span>` : ""}</div>
+  </div>`).join("");
+  $(k + "Segs").querySelectorAll("input").forEach(inp => {
+    inp.oninput = () => { st.seg[inp.dataset.k][+inp.dataset.i][inp.dataset.f] = inp.value; update(); };
+  });
+  $(k + "Segs").querySelectorAll(".seg-x").forEach(b => b.onclick = () => { st.seg[k].splice(+b.dataset.i, 1); renderSegs(k); update(); });
+}
+document.querySelectorAll(".addseg").forEach(b => b.onclick = () => {
+  const k = b.dataset.k; st.seg[k].push(newSeg()); renderSegs(k); update();
+  const ins = $(k + "Segs").querySelectorAll('input[data-f="d"]'); ins[ins.length-1].focus();
+});
+const num = s => { const x = parseFloat(String(s || "").trim().replace(",", ".")); return isFinite(x) && x > 0 ? x : 0; };
+// 구간을 합쳐 한 번의 운동으로 계산: 거리는 더하고, 페이스는 시간 합 ÷ 거리 합
+function combine(){
+  const sw = st.seg.swim.map(s => ({ d: Math.round(num(s.d)), p: num(s.a) * 60 + num(s.b) })).filter(s => s.d > 0);
+  const sm = sw.reduce((a, s) => a + s.d, 0);
+  const swP = sw.filter(s => s.p > 0), swPd = swP.reduce((a, s) => a + s.d, 0);
+  const spSec = swPd ? Math.round(swP.reduce((a, s) => a + s.p * s.d / 100, 0) / swPd * 100) : 0;
+  const rn = st.seg.run.map(s => ({ d: r2(num(s.d)), t: num(s.a) * 60 + num(s.b) })).filter(s => s.d > 0);
+  const rk = r2(rn.reduce((a, s) => a + s.d, 0));
+  const rnT = rn.filter(s => s.t > 0), rnTd = rnT.reduce((a, s) => a + s.d, 0);
+  const rMin = rnTd ? Math.round(rnT.reduce((a, s) => a + s.t, 0) / rnTd * rk) : 0;
+  const memo = [sw.length > 1 ? `수영 ${sw.length}구간 합산(${sw.map(s => s.d).join("+")}m)` : "",
+                rn.length > 1 ? `러닝 ${rn.length}구간 합산(${rn.map(s => s.d).join("+")}km)` : ""].filter(Boolean).join(", ");
+  return { sm, spSec, swN: sw.length, rk, rMin, rnN: rn.length, memo };
+}
+function renderDates(){
+  const S = DATA.settings;
+  if (st.date < S.start || st.date > S.end) st.date = TODAY > S.end ? S.end : (TODAY < S.start ? S.start : TODAY);
+  const opts = [[addD(TODAY,-1),"어제"],[TODAY,"오늘"]].filter(o => o[0] >= S.start && o[0] <= S.end);
+  $("dates").innerHTML = opts.map(([d,l]) => `<button class="pill${st.date===d?" on":""}" data-d="${d}">${l} ${md(d)} ${dow(d)}</button>`).join("")
+    + (!opts.some(o => o[0] === st.date) ? `<button class="pill on" data-d="${st.date}">${md(st.date)} ${dow(st.date)}</button>` : "")
+    + `<label class="pill datepick" aria-label="다른 날짜">📅<input type="date" min="${S.start}" max="${S.end}" value="${st.date}"></label>`;
+  $("dates").querySelectorAll("[data-d]").forEach(b => b.onclick = () => { st.date = b.dataset.d; renderDates(); renderNames(); });
+  $("dates").querySelector("input").onchange = e => { if (e.target.value) { st.date = e.target.value; renderDates(); renderNames(); } };
+}
+function renderNames(){
+  if (!DATA) return;
+  const done = new Set(DATA.records.filter(r => r.date === st.date).map(r => r.name));
+  const sel = $("names");
+  sel.innerHTML = `<option value="" disabled${st.name ? "" : " selected"}>이름을 고르세요 ▾</option>` +
+    DATA.settings.members.map(n => `<option value="${esc(n)}"${st.name===n?" selected":""}>${esc(n)}${done.has(n)?"  ✓ 입력함":""}</option>`).join("");
+  sel.classList.toggle("on", !!st.name);
+  sel.onchange = () => { st.name = sel.value; sel.classList.toggle("on", !!st.name); update(); };
+}
+function renderBonus(){
+  $("bonus").innerHTML = Object.keys(BON).map(k => `<button class="tog${st.b.has(k)?" on":""}" style="--c:${BON[k].c}" data-k="${k}" aria-pressed="${st.b.has(k)}"><span class="ck">✓</span><b>${BON[k].t}</b><small>+${BON[k].p}점 · ${BON[k].s}</small></button>`).join("");
+  $("bonus").querySelectorAll("button").forEach(b => b.onclick = () => { const k = b.dataset.k; st.b.has(k) ? st.b.delete(k) : st.b.add(k); renderBonus(); update(); });
+  $("picked").innerHTML = st.b.size ? "선택됨: " + [...st.b].map(k => `<b>${BON[k].t}</b>`).join(" ") : "선택한 보너스 없음";
+}
+const v = id => $(id).value.trim();
+const nv = id => { const x = parseFloat(v(id).replace(",", ".")); return isFinite(x) && x > 0 ? x : 0; };
+function judge(){
+  const S = DATA.settings;
+  const c = combine();
+  const sm = c.sm, rk = c.rk, spSec = c.spSec, rMin = c.rMin;
+  const tk = r2(nv("tk")), te = Math.round(nv("te")), tMin = Math.round(nv("tt1") * 60 + nv("tt2"));
+  const sOk = !(sm && spSec > S.swimPace * 60), rOk = !(rk && rMin > S.runPace * rk);
+  let tOk = true, why = "";
+  if (tk && tMin > S.trailPace * tk) { tOk = false; why = `1km당 ${S.trailPace}:00 초과 (${paceTxt(tMin/tk)}/km)`; }
+  if (tk && tOk && te < S.trailElev) { tOk = false; why = `상승고도 ${S.trailElev}m 미만 (${te}m)`; }
+  const set = (id, has, ok, okTxt, badTxt) => { const e = $(id); e.className = "judge" + (has ? (ok ? " ok" : " bad") : ""); e.textContent = !has ? "" : ok ? okTxt : badTxt; };
+  const sTot = c.swN > 1 ? `합계 ${sm.toLocaleString()}m · ` : "", rTot = c.rnN > 1 ? `합계 ${rk}km · ` : "";
+  set("sj", sm, sOk, `✅ ${sTot}인정${spSec ? ` (페이스 ${paceTxt(spSec/60)})` : ""} · ${r2(sm/250)}점`, `❌ ${sTot}불인정 · 100m당 ${S.swimPace}:00 초과 (${paceTxt(spSec/60)})`);
+  set("rj", rk, rOk, `✅ ${rTot}인정${rMin ? ` (페이스 ${paceTxt(rMin/rk)}/km)` : ""} · ${rk}점`, `❌ ${rTot}불인정 · 1km당 ${S.runPace}:00 초과 (${paceTxt(rMin/(rk||1))}/km)`);
+  set("tj", tk, tOk, `✅ 인정${tMin ? ` (페이스 ${paceTxt(tMin/tk)}/km)` : ""} · ${tk}점${tk >= 8 ? " + 보너스 10" : ""}`, `❌ 불인정 · ${why}`);
+  return { sm, rk, tk, te, spSec, rMin, tMin, sOk, rOk, tOk, autoMemo: c.memo };
+}
+function update(){
+  if (!DATA) return;
+  const j = judge();
+  const has = j.sm || j.rk || j.tk;
+  const pts = (j.sOk ? j.sm/250 : 0) + (j.rOk ? j.rk : 0) + (j.tOk ? j.tk : 0);
+  $("pv").innerHTML = has ? `기본 <b>${r2(pts)}점</b>${st.b.size ? ` + 보너스 선택 ${st.b.size}개` : ""}` : "";
+  const btn = $("saveBtn");
+  btn.disabled = !st.name || !has;
+  btn.textContent = !st.name ? "이름을 고르세요" : !has ? "거리를 입력하세요" : st.edit ? `${st.name} ${md(st.date)} 수정 내용 저장` : `${st.name} ${md(st.date)} 기록 저장`;
+  $("editbar").classList.toggle("on", !!st.edit);
+  if (st.edit) $("editTxt").textContent = `✏️ ${st.edit.name} ${md(st.edit.date)} 기록 수정 중`;
+}
+FIELDS.forEach(id => $(id).addEventListener("input", update));
+function clearForm(){
+  st.name = ""; st.b.clear(); st.seg = { swim:[newSeg()], run:[newSeg()] }; st.edit = null;
+  FIELDS.concat("memo").forEach(id => $(id).value = "");
+  renderNames(); renderBonus(); renderSegs("swim"); renderSegs("run"); update();
+}
+$("editCancel").onclick = () => { clearForm(); toast("수정을 취소했어요"); };
+$("saveBtn").onclick = async () => {
+  if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  // 수영을 km로 넣은 것 같으면(1.5 등) 저장 전에 한 번만 물어봄
+  const small = st.seg.swim.filter(s => { const x = num(s.d); return x > 0 && x < 20; });
+  if (small.length) {
+    const lst = small.map(s => num(s.d)).join(", ");
+    if (await ask(`수영 거리 ${lst}는 km로 넣은 것 같아요.\nm로 바꿔서(×1000) 저장할까요?`, { ok: "m로 바꿔 저장", cancel: "그대로 저장" }))
+      small.forEach(s => s.d = String(Math.round(num(s.d) * 1000)));
+  }
+  const j = judge();
+  const rec = { date: st.date, name: st.name, sm:j.sm, rk:j.rk, tk:j.tk, elev:j.te, spSec:j.spSec, rMin:j.rMin, tMin:j.tMin,
+    bung: st.b.has("bung"), rev: st.b.has("rev"), jung: st.b.has("jung"), team: st.b.has("team"),
+    memo: [j.autoMemo, v("memo")].filter(Boolean).join(" / ") };
+  const pts = r2((j.sOk ? j.sm/250 : 0) + (j.rOk ? j.rk : 0) + (j.tOk ? j.tk : 0));
+  const snap = { name: st.name, b: new Set(st.b), seg: JSON.parse(JSON.stringify(st.seg)), edit: st.edit, vals: FIELDS.concat("memo").map(id => [id, $(id).value]) };
+  const restore = () => {
+    const typed = st.name || st.edit || FIELDS.concat("memo").some(id => $(id).value) || ["swim","run"].some(k => st.seg[k].some(s => s.d || s.a || s.b));
+    if (typed) return;   // 이미 다음 입력을 시작했으면 덮어쓰지 않음 (실패 알림만 표시)
+    st.name = snap.name; st.b = snap.b; st.seg = snap.seg; st.edit = snap.edit; snap.vals.forEach(([id, val]) => $(id).value = val);
+    if (VIEW === "in") { renderNames(); renderBonus(); renderSegs("swim"); renderSegs("run"); update(); }
+  };
+  const edit = st.edit;
+  // 먼저 화면에 반영하고(바로 다음 입력 가능), 서버 저장은 뒤에서 차례대로 진행
+  let temp = null;
+  if (edit) { PEND.upd.set(edit.row, Object.assign({}, rec, { pts, judge:"" })); }
+  else { temp = Object.assign({ row: -Date.now(), pending: true, status: "정상", judge: "", pts }, rec); PEND.add.push(temp); }
+  DATA = view(); clearForm(); window.scrollTo({ top:0, behavior:"smooth" });
+  toast(`${rec.name} ${edit ? "수정" : "저장"} 중…`); busy(1);
+  enqueue(async () => {
+    try {
+      const res = edit ? await api("POST", { action:"update", row: edit.row, date: edit.date, name: edit.name, record: rec })
+                       : await api("POST", { action:"add", record: rec });
+      if (edit) PEND.upd.delete(edit.row); else PEND.add = PEND.add.filter(x => x !== temp);
+      setData(res); afterLoad(); toast(`${rec.name} ${md(rec.date)} 기록을 ${edit ? "수정" : "저장"}했어요`);
+    } catch(e){
+      if (edit) PEND.upd.delete(edit.row); else PEND.add = PEND.add.filter(x => x !== temp);
+      DATA = view(); afterLoad(); restore();
+      notify(`${rec.name} 기록 ${edit ? "수정" : "저장"} 실패: ${e.message}\n입력값을 되돌려 놨어요. 다시 저장해 주세요.`);
+    } finally { busy(-1); }
+  });
+};
+
+/* ---------- 점수 ---------- */
+function renderScore(){
+  if (!DATA) return;
+  const T = DATA.team, rows = [...DATA.members].sort((a,b) => b.total - a.total);
+  $("asof").textContent = T.asof ? md(T.asof) : "-";
+  $("tTotal").textContent = r2(T.total);
+  $("tBase").textContent = r2(T.base);
+  $("tBonus").textContent = r2(T.bonus);
+  $("tDay").textContent = `${new Set(DATA.records.filter(r => r.date === T.asof).map(r => r.name)).size} / ${DATA.settings.members.length}명`;
+  $("tBar").style.width = Math.min(100, T.cap ? T.baseSum / T.cap * 100 : 0) + "%";
+  $("tCap").textContent = `${r2(T.baseSum)} / ${T.cap}`;
+  $("rank").innerHTML = rows.map((r, i) => `<li>
+    <button class="top" aria-expanded="false"><span class="pos num">${i+1}</span>
+      <span class="who"><b>${esc(r.name)}</b><small><span class="chip s">수영 ${r.swimStage}단계</span><span class="chip r">러닝 ${r.runStage}단계</span>${r.trailBP ? '<span class="chip t">트레일 ✓</span>' : ""}</small></span>
+      <span class="tot num">${r2(r.total)}</span></button>
+    <div class="detail"><table>
+      <tr><td>🏊 수영 기본</td><td class="num">${r2(r.swim)}</td></tr>
+      <tr><td>🏃 러닝 기본</td><td class="num">${r2(r.run)}</td></tr>
+      <tr><td>⛰️ 트레일 기본</td><td class="num">${r2(r.trail)}</td></tr>
+      ${r.deduct ? `<tr><td class="warn">휴식 부족 공제</td><td class="num warn">-${r2(r.deduct)}</td></tr>` : ""}
+      <tr><td>수영 거리 보너스</td><td class="num">+${r.swimBP}</td></tr>
+      <tr><td>러닝 거리 보너스</td><td class="num">+${r.runBP}</td></tr>
+      <tr><td>⚡ 번개 · 📝 후기</td><td class="num">+${r.bung + r.rev}</td></tr>
+      <tr><td>🔥 정모 · 🤝 팀번개</td><td class="num">+${r.jung + r.team}</td></tr>
+      <tr><td>⛰️ 트레일 보너스</td><td class="num">+${r.trailBP}</td></tr>
+      <tr><td>😴 휴식일</td><td class="num ${r.rest < 2 ? "warn" : ""}">${r.rest} / 2일</td></tr>
+    </table></div></li>`).join("");
+  $("rank").querySelectorAll(".top").forEach(b => b.onclick = () => { const li = b.parentElement; li.classList.toggle("open"); b.setAttribute("aria-expanded", li.classList.contains("open")); });
+}
+$("copyBtn").onclick = async () => {
+  const t = DATA && DATA.team.summary; if (!t) return;
+  try { await navigator.clipboard.writeText(t); toast("요약을 복사했어요"); }
+  catch(e){ ask("아래 문장을 길게 눌러 복사하세요", { cancel: "", ok: "닫기", text: t }); }
+};
+
+/* ---------- 기록 ---------- */
+/* 기록 한 줄마다 받은 보너스를 계산 (시트 점수판과 같은 규칙)
+   - 거리 보너스: 운동 1회에 1단계씩, 단계가 오를 때 늘어난 만큼만 그 기록에 표시
+   - 번개·후기: 하루 1회 / 정모·팀번개·트레일: 1회 */
+const RUN_ST = [[10,3],[15,5],[20,8],[25,10]], SWIM_ST = [[1500,3],[2500,5],[3000,8],[4000,10]];
+function recordBonus(records){
+  const out = new Map(), byName = {};
+  records.filter(r => !r.pending && (r.status || "정상") === "정상")
+    .sort((a, b) => a.date === b.date ? a.row - b.row : a.date < b.date ? -1 : 1)
+    .forEach(r => (byName[r.name] = byName[r.name] || []).push(r));
+  Object.values(byName).forEach(list => {
+    let rs = 0, ss = 0; const seenDay = { bung:new Set(), rev:new Set() }, once = {};
+    list.forEach(r => {
+      let b = 0;
+      if ((r.runPts || 0) > 0 && rs < 4 && r.rk >= RUN_ST[rs][0]) { b += RUN_ST[rs][1] - (rs ? RUN_ST[rs-1][1] : 0); rs++; }
+      if ((r.swimPts || 0) > 0 && ss < 4 && r.sm >= SWIM_ST[ss][0]) { b += SWIM_ST[ss][1] - (ss ? SWIM_ST[ss-1][1] : 0); ss++; }
+      if (r.bung && !seenDay.bung.has(r.date)) { seenDay.bung.add(r.date); b += BON.bung.p; }
+      if (r.rev && !seenDay.rev.has(r.date)) { seenDay.rev.add(r.date); b += BON.rev.p; }
+      if (r.jung && !once.jung) { once.jung = 1; b += BON.jung.p; }
+      if (r.team && !once.team) { once.team = 1; b += BON.team.p; }
+      if ((r.trailPts || 0) > 0 && r.tk >= 8 && !once.trail) { once.trail = 1; b += 10; }
+      out.set(r.row, b);
+    });
+  });
+  return out;
+}
+function renderLog(){
+  if (!DATA) return;
+  const admin = DATA.role === "admin";
+  const bonus = recordBonus(DATA.records);
+  const byDay = {};
+  DATA.records.forEach(r => (byDay[r.date] = byDay[r.date] || []).push(r));
+  const days = Object.keys(byDay).sort().reverse();
+  if (!days.length) { $("log").innerHTML = `<div class="empty">아직 기록이 없어요.${admin ? " 입력 탭에서 첫 기록을 넣어 보세요." : ""}</div>`; return; }
+  $("log").innerHTML = days.map(d => {
+    const list = byDay[d];
+    const mil = r2(list.reduce((a, r) => a + (r.pending ? 0 : (r.pts || 0)), 0));
+    const bon = list.reduce((a, r) => a + (bonus.get(r.row) || 0), 0);
+    return `<div class="dayhead"><span class="d">${md(d)} (${dow(d)}) · ${new Set(list.map(r => r.name)).size}명</span>
+        <span class="tot num">팀 ${r2(mil + bon)}점<small>(${mil} + ${bon})</small></span></div>
+      <div class="cols"><span></span><span>마일리지</span><span>보너스</span></div>` +
+    list.map(r => {
+      const parts = [
+        r.sm ? `🏊 ${r.sm.toLocaleString()}m${r.spSec ? ` (${paceTxt(r.spSec/60)})` : ""}` : "",
+        r.rk ? `🏃 ${r.rk}km${r.rMin ? ` (${Math.floor(r.rMin/60)}:${pad(r.rMin%60)})` : ""}` : "",
+        r.tk ? `⛰️ ${r.tk}km ↑${r.elev}m` : "",
+        ...["bung","rev","jung","team"].filter(k => r[k]).map(k => BON[k].t)
+      ].filter(Boolean).join("  ");
+      const bad = r.judge || (r.status && r.status !== "정상" ? r.status : "");
+      const b = bonus.get(r.row) || 0;
+      return `<div class="rec2${r.pending ? " pend" : ""}">
+        <div><b>${esc(r.name)}</b>${bad ? `<span class="tag">${esc(bad)}</span>` : ""}<small>${parts}</small>${r.memo ? `<small>📌 ${esc(r.memo)}</small>` : ""}
+          ${admin && !r.pending ? `<div class="acts"><button class="edit" data-row="${r.row}">수정</button><button class="del" data-row="${r.row}">삭제</button></div>` : ""}</div>
+        <span class="mil">${r.pending ? "처리 중" : r2(r.pts || 0)}</span>
+        <span class="bon${b ? "" : " zero"}">${r.pending ? "" : (b ? "+" + b : "0")}</span></div>`;
+    }).join("");
+  }).join("");
+  $("log").querySelectorAll(".edit").forEach(b => b.onclick = () => startEdit(DATA.records.find(r => r.row === +b.dataset.row)));
+  $("log").querySelectorAll(".del").forEach(b => b.onclick = async () => {
+    const r = DATA.records.find(x => x.row === +b.dataset.row); if (!r) return;
+    if (!await ask(`${r.name} ${md(r.date)} 기록을 삭제할까요?\n(지운 내용은 시트의 '삭제 기록' 탭에 남아요)`, { ok: "삭제", danger: true })) return;
+    PEND.del.add(r.row); DATA = view(); renderLog(); busy(1);
+    enqueue(async () => {
+      try { const res = await api("POST", { action:"delete", row: r.row, date: r.date, name: r.name }); PEND.del.delete(r.row); setData(res); afterLoad(); toast("삭제했어요"); }
+      catch(e){ PEND.del.delete(r.row); DATA = view(); afterLoad(); notify("삭제 실패: " + e.message); }
+      finally { busy(-1); }
+    });
+  });
+}
+function startEdit(r){
+  if (!r) return;
+  const sp = r.spSec || 0, rm = r.rMin || 0, tm = r.tMin || 0;
+  st.edit = { row: r.row, date: r.date, name: r.name };
+  st.date = r.date; st.name = r.name;
+  st.b = new Set(["bung","rev","jung","team"].filter(k => r[k]));
+  st.seg = { swim:[{ d: r.sm || "", a: sp ? Math.floor(sp/60) : "", b: sp ? sp % 60 : "" }],
+             run:[{ d: r.rk || "", a: rm ? Math.floor(rm/60) : "", b: rm ? rm % 60 : "" }] };
+  $("tk").value = r.tk || ""; $("te").value = r.elev || "";
+  $("tt1").value = tm ? Math.floor(tm/60) : ""; $("tt2").value = tm ? tm % 60 : "";
+  $("memo").value = r.memo || "";
+  show("in");
+  toast("내용을 고친 뒤 '수정 내용 저장'을 누르세요");
+}
+
+/* ---------- 시작 ---------- */
+document.querySelectorAll("#v-in input").forEach(i => { i.setAttribute("autocomplete", "off"); if (i.type !== "date") i.value = ""; });
+window.addEventListener("pageshow", e => { if (e.persisted && !st.edit && !st.name) clearForm(); });
+$("demo").hidden = !DEMO;
+(async () => {
+  CODE = "open";
+  // 지난번 받은 데이터로 화면을 바로 띄우고, 최신 데이터는 뒤에서 받아옴
+  let cached = null; try { cached = JSON.parse(store.get("data5") || "null"); } catch(e){}
+  if (cached && cached.settings && !DEMO) { RAW = cached; DATA = view(); afterLoad(); show("in"); refresh(true); return; }
+  $("v-score").insertAdjacentHTML("afterbegin", '<div class="loading" id="ld">불러오는 중…</div>');
+  show("score"); busy(1);
+  try { setData(await api("GET")); afterLoad(); show("in"); }
+  catch(e){ if (e.code === "code") logout(e.message); else toast(e.message); }
+  finally { busy(-1); }
+  const ld = $("ld"); if (ld) ld.remove();
+})();
+</script>
+
+</body>
+</html>
