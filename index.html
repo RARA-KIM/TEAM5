@@ -105,7 +105,32 @@ main{padding:16px}
 .lane .cap{display:flex;justify-content:space-between;font-size:12px;color:#A9C2D3;margin-top:6px}
 .copy{margin-top:14px;width:100%;border:1px solid #3B566C;background:transparent;color:#fff;border-radius:12px;padding:11px;font-size:14px;cursor:pointer}
 
+.contrib{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.contrib .ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.contrib .ch b{font-size:16px}
+.cseg{display:flex;background:var(--tile);border-radius:9px;padding:2px}
+.cseg button{border:0;background:none;font-size:12.5px;padding:5px 9px;border-radius:7px;color:var(--sub);cursor:pointer;font-weight:600}
+.cseg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.stack{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--tile);gap:2px}
+.stack i{display:block;height:100%;min-width:2px;transition:flex-grow .3s}
+.clist{list-style:none;margin:10px 0 0;padding:0}
+.clist li{display:grid;grid-template-columns:10px 52px 1fr 46px 50px;gap:8px;align-items:center;font-size:14px;padding:5px 0}
+.clist .dot{width:10px;height:10px;border-radius:3px}
+.clist .mb{height:8px;border-radius:4px;background:var(--tile);overflow:hidden}
+.clist .mb i{display:block;height:100%;border-radius:4px}
+.clist .pc{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.clist .pt{text-align:right;color:var(--sub);font-size:12.5px;font-variant-numeric:tabular-nums}
+.csum{display:flex;justify-content:space-between;align-items:baseline;margin:0 2px 6px;font-size:13px;color:var(--sub)}
+.csum b{font-size:20px;color:var(--ink);font-variant-numeric:tabular-nums}
+.mixh{font-size:13px;color:var(--sub);font-weight:600;margin:14px 0 6px}
+.mixl{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12.5px;color:var(--sub);margin-top:6px}
+.mixl span{display:inline-flex;align-items:center;gap:4px}
+.mixl span::before{content:"";width:9px;height:9px;border-radius:3px;background:var(--c)}
+.mixl b{color:var(--ink)}
 .rank{list-style:none;margin:0;padding:0}
+.rank .tot{text-align:right}
+.rank .tsub{display:block;font-size:12px;font-weight:600;color:var(--sub);letter-spacing:0;line-height:1.45;margin-top:2px;white-space:nowrap}
+.rank .tsub em{font-style:normal;font-weight:500;opacity:.8}
 .rank li{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:8px;overflow:hidden}
 .rank .top{display:flex;align-items:center;gap:12px;padding:14px;cursor:pointer;width:100%;background:none;border:0;text-align:left}
 .pos{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:700;background:var(--tile);flex:none}
@@ -124,21 +149,30 @@ main{padding:16px}
 .chip.s{background:var(--pool-soft);color:var(--pool)}.chip.r{background:var(--track-soft);color:var(--track)}
 
 /* records */
-.dayhead{display:flex;justify-content:space-between;align-items:baseline;margin:18px 4px 4px}
+.dayhead{display:flex;justify-content:space-between;align-items:baseline;margin:16px 4px 6px}
 .dayhead .d{font-size:14px;color:var(--sub);font-weight:600}
 .dayhead .tot{font-size:15px;font-weight:700;color:var(--ink)}
-.dayhead .tot small{font-size:12px;font-weight:500;color:var(--sub);margin-left:4px}
-.cols{display:grid;grid-template-columns:1fr 72px 56px;gap:6px;font-size:11px;color:var(--sub);padding:0 14px 4px;text-align:right}
-.rec2{display:grid;grid-template-columns:1fr 72px 56px;gap:6px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:6px;font-size:15px}
+.dayhead .tot small{font-size:11px;font-weight:500;color:var(--sub);margin-left:4px}
+.daybox{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.cols{display:grid;grid-template-columns:1fr 64px 46px;gap:8px;font-size:11px;color:var(--sub);padding:6px 14px 4px;text-align:right}
+.cols span:first-child{text-align:left}
+.rec2{display:grid;grid-template-columns:1fr 64px 46px;gap:8px;align-items:center;border-top:1px solid var(--line);padding:11px 14px;font-size:15px;line-height:1.45;cursor:pointer}
 .rec2.pend{opacity:.6}
-.rec2 small{display:block;color:var(--sub);font-size:13px;word-break:keep-all}
-.rec2 .tag{display:inline-block;font-size:12px;font-weight:700;border-radius:6px;padding:1px 6px;margin-left:4px;background:var(--bad-soft);color:var(--bad)}
+.rec2 .main b{display:block;font-size:16px;margin-bottom:2px}
+.rec2 .p{font-size:14px;color:var(--sub);word-break:keep-all}
+.rec2 .p .it{white-space:nowrap}
+.rec2 .p i{font-style:normal;font-size:12.5px;opacity:.85}
+.rec2 small{display:block;color:var(--sub);font-size:12px;word-break:keep-all;margin-top:2px}
+.rec2 .more{display:none}
+.rec2.open{background:var(--tile)}
+.rec2.open .more{display:block}
+.rec2 .tag{display:inline-block;font-size:11px;font-weight:700;border-radius:6px;padding:0 5px;margin-left:4px;background:var(--bad-soft);color:var(--bad)}
 .rec2 .mil,.rec2 .bon{text-align:right;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
 .rec2 .mil{font-size:16px}
 .rec2 .bon{font-size:15px;color:var(--ok)}
 .rec2 .bon.zero{color:var(--sub);font-weight:500}
-.rec2 .acts{margin-top:8px;display:flex;gap:6px}
-.rec2 .acts .edit,.rec2 .acts .del{margin-left:0;padding:6px 12px;font-size:13px}
+.rec2 .acts{margin-top:6px;display:flex;gap:6px}
+.rec2 .acts .edit,.rec2 .acts .del{margin-left:0;padding:5px 12px;font-size:13px}
 .rec{display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:6px;font-size:15px}
 .rec small{display:block;color:var(--sub);font-size:13px}
 .del,.edit{border:1px solid var(--line);background:var(--card);border-radius:10px;font-size:14px;padding:9px 12px;cursor:pointer;white-space:nowrap;flex:none;margin-left:6px}
@@ -168,6 +202,11 @@ nav button.on{color:var(--ink);font-weight:700}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
 .chip.t{background:#E3EEDA;color:var(--trail)}
+.chip.rest{background:#ECE7F6;color:#5B4A8B;font-size:11px;padding:1px 5px;margin-right:3px}
+.chip.rest.no{background:transparent;color:#9AA3AF;box-shadow:inset 0 0 0 1px #C9CED6}
+.who small{display:flex;flex-wrap:wrap;row-gap:4px}
+.who small .chip{margin-right:3px}
+.who small .rests{flex-basis:100%;display:flex}
 header .hrow{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .icon-btn{border:1px solid #3B566C;background:transparent;color:#fff;border-radius:10px;padding:6px 10px;font-size:13px;cursor:pointer;white-space:nowrap}
 .demo{background:#FFF3CD;color:#7A5B00;font-size:13px;padding:8px 16px}
@@ -259,6 +298,16 @@ header .hrow{display:flex;justify-content:space-between;align-items:flex-start;g
         </div>
         <button class="copy" id="copyBtn">단톡방용 요약 복사</button>
       </div>
+      <div class="contrib">
+        <div class="ch"><b>팀 기여도</b>
+          <div class="cseg" id="cSeg"><button data-k="total" class="on">총점</button><button data-k="base">마일리지</button><button data-k="bonus">보너스</button></div></div>
+        <div class="csum" id="cSum"></div>
+        <div class="stack" id="cStack"></div>
+        <ul class="clist" id="cList"></ul>
+        <div class="mixh" id="cMixH">팀 점수 구성</div>
+        <div class="stack mix" id="cMix"></div>
+        <div class="mixl" id="cMixL"></div>
+      </div>
       <ul class="rank" id="rank"></ul>
     </section>
 
@@ -297,6 +346,10 @@ const DOW = "일월화수목금토";
 const addD = (s, k) => { const d = new Date(s + "T00:00"); d.setDate(d.getDate() + k); return ymd(d); };
 const dow = s => DOW[new Date(s + "T00:00").getDay()];
 const r2 = x => Math.round(x * 100) / 100;
+// 휴식일 표시: 채운 휴식은 보라색 '휴식1 ✓', 아직 안 채운 칸은 점선 '휴식2'
+const restChips = n => { n = Number(n) || 0; let h = "";
+  for (let i = 1; i <= Math.max(2, n); i++) h += i <= n ? `<span class="chip rest">휴식${i}✓</span>` : `<span class="chip rest no">휴식${i}</span>`;
+  return '<span class="rests">' + h + '</span>'; };
 const paceTxt = m => { const a = Math.floor(m), s = Math.round((m - a) * 60); return `${a}:${pad(s === 60 ? 0 : s)}`; };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
 const store = {
@@ -604,8 +657,8 @@ function renderScore(){
   $("tCap").textContent = `${r2(T.baseSum)} / ${T.cap}`;
   $("rank").innerHTML = rows.map((r, i) => `<li>
     <button class="top" aria-expanded="false"><span class="pos num">${i+1}</span>
-      <span class="who"><b>${esc(r.name)}</b><small><span class="chip s">수영 ${r.swimStage}단계</span><span class="chip r">러닝 ${r.runStage}단계</span>${r.trailBP ? '<span class="chip t">트레일 ✓</span>' : ""}</small></span>
-      <span class="tot num">${r2(r.total)}</span></button>
+      <span class="who"><b>${esc(r.name)}</b><small><span class="chip s">수영 ${r.swimStage}단계</span><span class="chip r">러닝 ${r.runStage}단계</span>${r.trailBP ? '<span class="chip t">트레일 ✓</span>' : ""}${restChips(r.rest)}</small></span>
+      <span class="tot num">${r2(r.total)}<span class="tsub"><em>마일리지</em> ${r2(r.baseFinal)}<br><em>보너스</em> +${r2(r.bonus)}</span></span></button>
     <div class="detail"><table>
       <tr><td>🏊 수영 기본</td><td class="num">${r2(r.swim)}</td></tr>
       <tr><td>🏃 러닝 기본</td><td class="num">${r2(r.run)}</td></tr>
@@ -618,8 +671,36 @@ function renderScore(){
       <tr><td>⛰️ 트레일 보너스</td><td class="num">+${r.trailBP}</td></tr>
       <tr><td>😴 휴식일</td><td class="num ${r.rest < 2 ? "warn" : ""}">${r.rest} / 2일</td></tr>
     </table></div></li>`).join("");
+  renderContrib();
   $("rank").querySelectorAll(".top").forEach(b => b.onclick = () => { const li = b.parentElement; li.classList.toggle("open"); b.setAttribute("aria-expanded", li.classList.contains("open")); });
 }
+/* 팀 기여도: 각자 점수가 팀 전체에서 차지하는 비율 */
+const CCOL = ["#1683A8","#C8492B","#E0A800","#1E8A55","#7A5BC7","#D6336C","#5B7083","#2F9E9E"];
+let cKey = "total";
+function renderContrib(){
+  if (!DATA) return;
+  const pick = m => cKey === "base" ? (m.baseFinal || 0) : cKey === "bonus" ? (m.bonus || 0) : (m.total || 0);
+  const names = [...DATA.members].sort((a,b) => b.total - a.total).map(m => m.name);
+  const col = n => CCOL[names.indexOf(n) % CCOL.length];
+  const list = [...DATA.members].map(m => ({ name: m.name, v: pick(m) })).sort((a,b) => b.v - a.v);
+  const sum = list.reduce((a, x) => a + x.v, 0) || 1, max = Math.max(...list.map(x => x.v), 1);
+  $("cSum").innerHTML = `<span>${{ total:"팀원 총점 합계", base:"마일리지 합계", bonus:"보너스 합계" }[cKey]}</span><b>${r2(list.reduce((a, x) => a + x.v, 0))}점</b>`;
+  $("cStack").innerHTML = list.filter(x => x.v > 0).map(x => `<i style="flex-grow:${x.v};background:${col(x.name)}" title="${esc(x.name)}"></i>`).join("");
+  $("cList").innerHTML = list.map(x => `<li><span class="dot" style="background:${col(x.name)}"></span><b>${esc(x.name)}</b>
+    <span class="mb"><i style="width:${x.v / max * 100}%;background:${col(x.name)}"></i></span>
+    <span class="pc">${(x.v / sum * 100).toFixed(1)}%</span><span class="pt">${r2(x.v)}점</span></li>`).join("");
+  const M = DATA.members, t = k => r2(M.reduce((a, m) => a + (m[k] || 0), 0));
+  const parts = [["수영", t("swim"), "var(--pool)"], ["러닝", t("run"), "var(--track)"], ["트레일", t("trail"), "var(--trail)"],
+                 ["거리 보너스", r2(M.reduce((a, m) => a + m.swimBP + m.runBP, 0)), "#E0A800"],
+                 ["번개·후기·정모 등", r2(M.reduce((a, m) => a + m.bung + m.rev + m.jung + m.team + m.trailBP, 0)), "#7A5BC7"]];
+  const ps = parts.reduce((a, x) => a + x[1], 0) || 1;
+  $("cMixH").innerHTML = `팀 점수 구성 · 합계 <b style="color:var(--ink)">${r2(M.reduce((a, m) => a + (m.total || 0), 0))}점</b>`;
+  $("cMix").innerHTML = parts.filter(x => x[1] > 0).map(x => `<i style="flex-grow:${x[1]};background:${x[2]}"></i>`).join("");
+  $("cMixL").innerHTML = parts.filter(x => x[1] > 0).map(x => `<span style="--c:${x[2]}">${x[0]} <b>${x[1]}점</b> (${Math.round(x[1] / ps * 100)}%)</span>`).join("");
+}
+$("cSeg").querySelectorAll("button").forEach(b => b.onclick = () => {
+  cKey = b.dataset.k; $("cSeg").querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b)); renderContrib();
+});
 $("copyBtn").onclick = async () => {
   const t = DATA && DATA.team.summary; if (!t) return;
   try { await navigator.clipboard.writeText(t); toast("요약을 복사했어요"); }
@@ -666,23 +747,25 @@ function renderLog(){
     const bon = list.reduce((a, r) => a + (bonus.get(r.row) || 0), 0);
     return `<div class="dayhead"><span class="d">${md(d)} (${dow(d)}) · ${new Set(list.map(r => r.name)).size}명</span>
         <span class="tot num">팀 ${r2(mil + bon)}점<small>(${mil} + ${bon})</small></span></div>
-      <div class="cols"><span></span><span>마일리지</span><span>보너스</span></div>` +
+      <div class="daybox"><div class="cols"><span>탭하면 수정·삭제</span><span>마일리지</span><span>보너스</span></div>` +
     list.map(r => {
       const parts = [
-        r.sm ? `🏊 ${r.sm.toLocaleString()}m${r.spSec ? ` (${paceTxt(r.spSec/60)})` : ""}` : "",
-        r.rk ? `🏃 ${r.rk}km${r.rMin ? ` (${Math.floor(r.rMin/60)}:${pad(r.rMin%60)})` : ""}` : "",
+        r.sm ? `🏊 ${r.sm.toLocaleString()}m${r.spSec ? ` <i>${paceTxt(r.spSec/60)}</i>` : ""}` : "",
+        r.rk ? `🏃 ${r.rk}km${r.rMin ? ` <i>${Math.floor(r.rMin/60)}:${pad(r.rMin%60)}</i>` : ""}` : "",
         r.tk ? `⛰️ ${r.tk}km ↑${r.elev}m` : "",
-        ...["bung","rev","jung","team"].filter(k => r[k]).map(k => BON[k].t)
-      ].filter(Boolean).join("  ");
+        ["bung","rev","jung","team"].filter(k => r[k]).map(k => BON[k].t.replace(" 참석","")).join(" ")
+      ].filter(Boolean).map(x => `<span class="it">${x}</span>`).join(" · ");
       const bad = r.judge || (r.status && r.status !== "정상" ? r.status : "");
       const b = bonus.get(r.row) || 0;
       return `<div class="rec2${r.pending ? " pend" : ""}">
-        <div><b>${esc(r.name)}</b>${bad ? `<span class="tag">${esc(bad)}</span>` : ""}<small>${parts}</small>${r.memo ? `<small>📌 ${esc(r.memo)}</small>` : ""}
-          ${admin && !r.pending ? `<div class="acts"><button class="edit" data-row="${r.row}">수정</button><button class="del" data-row="${r.row}">삭제</button></div>` : ""}</div>
+        <div class="main"><b>${esc(r.name)}</b><span class="p">${parts}</span>${bad ? `<span class="tag">${esc(bad)}</span>` : ""}
+          <div class="more">${r.memo ? `<small>📌 ${esc(r.memo)}</small>` : ""}
+          ${admin && !r.pending ? `<div class="acts"><button class="edit" data-row="${r.row}">수정</button><button class="del" data-row="${r.row}">삭제</button></div>` : ""}</div></div>
         <span class="mil">${r.pending ? "처리 중" : r2(r.pts || 0)}</span>
         <span class="bon${b ? "" : " zero"}">${r.pending ? "" : (b ? "+" + b : "0")}</span></div>`;
-    }).join("");
+    }).join("") + `</div>`;
   }).join("");
+  $("log").querySelectorAll(".rec2").forEach(el => el.onclick = e => { if (!e.target.closest("button")) el.classList.toggle("open"); });
   $("log").querySelectorAll(".edit").forEach(b => b.onclick = () => startEdit(DATA.records.find(r => r.row === +b.dataset.row)));
   $("log").querySelectorAll(".del").forEach(b => b.onclick = async () => {
     const r = DATA.records.find(x => x.row === +b.dataset.row); if (!r) return;
